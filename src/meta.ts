@@ -38,11 +38,13 @@ async function parseMeta(url: string): Promise<ParseMetaResult> {
 	const html = await response.text();
 	const cheerio = load(html);
 
-	// extract the title
-	const title = cheerio('title').text();
+	// extract <title> in <head>
+	const head = cheerio('head');
+	const title = head.find('title').text();
 
 	// extract meta attributes as dictionary
-	const meta = cheerio('meta')
+	const meta = head
+		.find('meta')
 		.map((_, el) => cheerio(el).attr('name') || cheerio(el).attr('property'))
 		.get()
 		.reduce((acc, key) => {
